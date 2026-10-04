@@ -1,7 +1,7 @@
 import express from "express";
 const app = express();
 
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   const name = process.env.NAME || "World";
   res.send(`Hello ${name}!`);
 });
