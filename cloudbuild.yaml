@@ -35,5 +35,16 @@ steps:
         docker push "$$IMAGE:$$VERSION"
         docker push "$$IMAGE:latest"
 
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "gcloud"
+    args:
+      - "run"
+      - "deploy"
+      - "${_GAR_IMAGE_NAME}"
+      - "--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/${_GAR_REPOSITORY}/${_GAR_IMAGE_NAME}:latest"
+      - "--region=$LOCATION"
+      - "--allow-unauthenticated"
+      - "--service-account=${_GAR_IMAGE_NAME}-runner-sa@$PROJECT_ID.iam.gserviceaccount.com"
+
 options:
   logging: CLOUD_LOGGING_ONLY
