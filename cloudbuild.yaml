@@ -1,0 +1,39 @@
+steps:
+  - name: "node:24"
+    entrypoint: "npm"
+    args: ["audit", "--audit-level=high"]
+
+  - name: "node:24"
+    entrypoint: "npm"
+    args: ["ci"]
+
+  - name: "node:24"
+    entrypoint: "npm"
+    args: ["test"]
+
+  - name: "node:24"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        VERSION=$(node -p "require('./package.json').version")
+        echo "$$VERSION" > /workspace/_version.txt
+        echo "Building version $$VERSION"
+
+  - name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        VERSION=$(cat /workspace/_version.txt)
+        IMAGE="$LOCATION-docker.pkg.dev/$PROJECT_ID/${_GAR_REPOSITORY}/${_GAR_IMAGE_NAME}"
+        docker build \
+          --network=cloudbuild \
+          -t "$$IMAGE:$$VERSION" \
+          -t "$$IMAGE:latest" \
+          .
+        docker push "$$IMAGE:$$VERSION"
+        docker push "$$IMAGE:latest"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
