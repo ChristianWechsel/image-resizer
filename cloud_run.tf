@@ -6,6 +6,15 @@ resource "google_cloud_run_v2_service" "resizer_service" {
     service_account = google_service_account.resizer_runner_sa.email
     containers {
         image = "${var.location}-docker.pkg.dev/${var.project_id}/${var.repository}/${var.name_prefix}:latest"
+        resources {
+          limits = {
+            cpu = "1"
+          }
+        }
+    }
+
+    scaling {
+      max_instance_count  = 3
     }
   }
 
