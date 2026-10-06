@@ -9,10 +9,13 @@
 
 ## Anleitung zum Einrichten
 
-Domain registrieren
-
 ```Shell
 # Ausgabe der URL
 terraform output
 gcloud run services list
+
+# Daten zu Einstellungen
+# <SERVICE> und <REGION> aus gcloud run services list ablesen
+gcloud run services describe <SERVICE> --region <REGION>
+
 ```
