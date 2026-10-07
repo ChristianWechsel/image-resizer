@@ -1,9 +1,8 @@
 import express from "express";
 const app = express();
 
-app.get("/", (_req, res) => {
-  const name = process.env.NAME || "World";
-  res.send(`Hello ${name}!`);
+app.get(["/", "/health"], (_req, res) => {
+  res.status(200).json({ status: "ok" });
 });
 
 const port = parseInt(process.env.PORT ?? "8080");
