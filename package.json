@@ -16,6 +16,7 @@
     "test:unit": "set NODE_ENV=test && npm run build-test && jest --selectProjects Unit",
     "test:int": "set NODE_ENV=test && npm run build-test && jest --selectProjects Integration",
     "debug": "NODE_ENV=development node --inspect-brk dist/index.js",
+    "dev": "NODE_ENV=development nodemon dist/index.js",
     "start": "NODE_ENV=production node dist/index.js"
   },
   "repository": {
@@ -39,6 +40,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.4",
     "jest": "^30.5.2",
+    "nodemon": "^3.1.14",
     "typescript": "^7.0.2"
   },
   "dependencies": {
