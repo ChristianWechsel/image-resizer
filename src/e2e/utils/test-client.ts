@@ -15,5 +15,9 @@ export function post(
     method: "POST",
     headers: message.headers,
     body: message.body,
-  }).then((response) => response.json());
+  })
+    .then((response) => {
+      return response.arrayBuffer();
+    })
+    .then((arrayBuffer) => new Uint8Array(arrayBuffer));
 }

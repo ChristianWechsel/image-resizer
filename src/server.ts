@@ -1,4 +1,6 @@
 import express from "express";
+import { pipeline } from "node:stream";
+import sharp from "sharp";
 
 export function createServer() {
   const app = express();
@@ -9,19 +11,13 @@ export function createServer() {
 
   // curl -X POST -d @Test.png localhost:8080/resize
   // curl -X POST -H "Content-Type: image/png" --data-binary @Test.png localhost:8080/resize
-  app.post("/resize", (req, res) => {
-    const chunks: Buffer[] = [];
-
-    req.on("data", (chunk) => {
-      chunks.push(chunk);
-    });
-    req.on("end", () => {
-      const imageBuffer = Buffer.concat(chunks);
-      console.log(`Received image buffer of size: ${imageBuffer.length}`);
-      res.status(200).json({ status: "success" });
-    });
-    req.on("error", (err) => {
-      console.error(`Error receiving data: ${err.message}`);
+  app.post("/resize", async (req, res) => {
+    res.type("image/png");
+    await pipeline(req, sharp().resize({ width: 200 }).png(), res, (err) => {
+      if (err) {
+        console.error(`Pipeline error: ${err.message}`);
+        res.status(500).json({ status: "error", message: err.message });
+      }
     });
   });
 

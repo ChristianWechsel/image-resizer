@@ -17,7 +17,7 @@
     "test:int": "set NODE_ENV=test && npm run build-test && jest --selectProjects Integration",
     "test:e2e": "set NODE_ENV=test && npm run build-test && jest --selectProjects E2E",
     "debug": "NODE_ENV=development node --inspect-brk dist/index.js",
-    "dev": "NODE_ENV=development nodemon dist/index.js",
+    "dev": "NODE_ENV=development tsx dist/index.js",
     "start": "NODE_ENV=production node dist/index.js"
   },
   "repository": {
@@ -41,10 +41,11 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.4",
     "jest": "^30.5.2",
-    "nodemon": "^3.1.14",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   },
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "sharp": "^0.35.5"
   }
 }

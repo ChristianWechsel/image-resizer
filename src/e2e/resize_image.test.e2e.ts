@@ -54,6 +54,6 @@ describe("Resize Image E2E Tests", () => {
       headers: { "Content-Type": "image/png" },
       body: testImageBuffer,
     });
-    expect(response).toEqual({ status: "success" });
+    expect(response).toHaveLength(66056);
   });
 });
