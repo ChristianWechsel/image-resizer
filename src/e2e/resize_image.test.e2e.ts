@@ -1,17 +1,42 @@
-import { TestClient } from "./utils/test-client.js";
+import type { Server } from "http";
+import { createServer } from "../server.js";
+import { get } from "./utils/test-client.js";
 
 describe("Resize Image E2E Tests", () => {
-  const testClient = new TestClient();
+  const PORT = 3000;
+  const app = createServer();
+  let server: Server;
 
   beforeAll(async () => {
-    await testClient.startServer({ host: "localhost", port: 3000 });
+    await new Promise<void>((resolve, reject) => {
+      server = app.listen(PORT);
+      server.once("listening", () => {
+        console.log(`Server is listening on port ${PORT}`);
+        resolve();
+      });
+      server.once("error", (err) => {
+        console.error(err);
+        reject(err);
+      });
+    });
   });
 
   afterAll(async () => {
-    await testClient.closeServer();
+    await new Promise<void>((resolve, reject) => {
+      server.once("close", () => {
+        console.log(`Server on port ${PORT} has been closed.`);
+        resolve();
+      });
+      server.once("error", (err) => {
+        console.error(err);
+        reject(err);
+      });
+      server.close();
+    });
   });
 
-  it("should resize an image successfully", () => {
-    expect(true).toBeTruthy();
+  it("should resize an image successfully", async () => {
+    const response = await get(`http://localhost:${PORT}/`);
+    expect(response).toEqual({ status: "ok" });
   });
 });
