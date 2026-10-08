@@ -49,11 +49,22 @@ describe("Resize Image E2E Tests", () => {
     expect(response).toEqual({ status: "ok" });
   });
 
-  it("resize endpoint should return status success", async () => {
+  it("resize endpoint with default width 200", async () => {
     const response = await post(`http://localhost:${PORT}/resize`, {
       headers: { "Content-Type": "image/png" },
       body: testImageBuffer,
     });
     expect(response).toHaveLength(66056);
+  });
+
+  it("resize endpoint with custom size", async () => {
+    const response = await post(
+      `http://localhost:${PORT}/resize?width=384&height=256`,
+      {
+        headers: { "Content-Type": "image/png" },
+        body: testImageBuffer,
+      },
+    );
+    expect(response).toHaveLength(190664);
   });
 });
