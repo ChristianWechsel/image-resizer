@@ -117,6 +117,11 @@ const config = {
             rootDir: "./dist",
             testMatch: ["**/*.test.int.js"],
         },
+        {
+            displayName: { name: "E2E", color: "green" },
+            rootDir: "./dist",
+            testMatch: ["**/*.test.e2e.js"],
+        },
     ],
 
     // Use this configuration option to add custom reporters to Jest

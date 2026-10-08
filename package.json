@@ -15,6 +15,7 @@
     "prepublishOnly": "npm run build-prod",
     "test:unit": "set NODE_ENV=test && npm run build-test && jest --selectProjects Unit",
     "test:int": "set NODE_ENV=test && npm run build-test && jest --selectProjects Integration",
+    "test:e2e": "set NODE_ENV=test && npm run build-test && jest --selectProjects E2E",
     "debug": "NODE_ENV=development node --inspect-brk dist/index.js",
     "dev": "NODE_ENV=development nodemon dist/index.js",
     "start": "NODE_ENV=production node dist/index.js"

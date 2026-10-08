@@ -41,6 +41,24 @@
       ]
     },
     {
+      "name": "Debug E2E Tests",
+      "type": "node",
+      "request": "launch",
+      "preLaunchTask": "npm: build-test",
+      "runtimeArgs": [
+        "--inspect",
+        "${workspaceFolder}/node_modules/jest/bin/jest.js",
+        "--runInBand",
+        "--selectProjects",
+        "E2E"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    },
+    {
       "name": "Debug",
       "address": "127.0.0.1",
       "port": 9229,
