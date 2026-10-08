@@ -1,5 +1,10 @@
 import { createServer, Server } from "http";
 
+type ServerConfig = {
+  host: string;
+  port: number;
+};
+
 export class TestClient {
   private server: Server;
 
@@ -11,7 +16,7 @@ export class TestClient {
     return this.server;
   }
 
-  startServer(config: { host: string; port: number }) {
+  startServer(config: ServerConfig) {
     return new Promise<void>((resolve, reject) => {
       this.server.once("listening", () => {
         console.log(
@@ -40,4 +45,6 @@ export class TestClient {
       this.server.close();
     });
   }
+
+  sendGet(target: ServerConfig, endpoint: string) {}
 }
