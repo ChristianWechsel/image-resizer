@@ -1,3 +1,4 @@
+import { readFileSync } from "fs";
 import type { Server } from "http";
 import { createServer } from "../server.js";
 import { get, post } from "./utils/test-client.js";
@@ -6,8 +7,11 @@ describe("Resize Image E2E Tests", () => {
   const PORT = 3000;
   const app = createServer();
   let server: Server;
+  let testImageBuffer: Uint8Array<ArrayBuffer>;
 
   beforeAll(async () => {
+    testImageBuffer = new Uint8Array(readFileSync("Test.png"));
+
     await new Promise<void>((resolve, reject) => {
       server = app.listen(PORT);
       server.once("listening", () => {
@@ -46,7 +50,10 @@ describe("Resize Image E2E Tests", () => {
   });
 
   it("resize endpoint should return status success", async () => {
-    const response = await post(`http://localhost:${PORT}/resize`);
+    const response = await post(`http://localhost:${PORT}/resize`, {
+      headers: { "Content-Type": "image/png" },
+      body: testImageBuffer,
+    });
     expect(response).toEqual({ status: "success" });
   });
 });

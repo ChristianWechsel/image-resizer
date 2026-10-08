@@ -8,6 +8,7 @@ export function createServer() {
   });
 
   // curl -X POST -d @Test.png localhost:8080/resize
+  // curl -X POST -H "Content-Type: image/png" --data-binary @Test.png localhost:8080/resize
   app.post("/resize", (req, res) => {
     const chunks: Buffer[] = [];
 
