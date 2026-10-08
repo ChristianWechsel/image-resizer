@@ -17,7 +17,7 @@ export function createServer() {
     req.on("end", () => {
       const imageBuffer = Buffer.concat(chunks);
       console.log(`Received image buffer of size: ${imageBuffer.length}`);
-      res.status(200).json({ status: "resize endpoint" });
+      res.status(200).json({ status: "success" });
     });
     req.on("error", (err) => {
       console.error(`Error receiving data: ${err.message}`);

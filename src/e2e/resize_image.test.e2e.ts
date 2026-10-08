@@ -1,6 +1,6 @@
 import type { Server } from "http";
 import { createServer } from "../server.js";
-import { get } from "./utils/test-client.js";
+import { get, post } from "./utils/test-client.js";
 
 describe("Resize Image E2E Tests", () => {
   const PORT = 3000;
@@ -43,5 +43,10 @@ describe("Resize Image E2E Tests", () => {
   it("health check endpoint should return status ok", async () => {
     const response = await get(`http://localhost:${PORT}/health`);
     expect(response).toEqual({ status: "ok" });
+  });
+
+  it("resize endpoint should return status success", async () => {
+    const response = await post(`http://localhost:${PORT}/resize`);
+    expect(response).toEqual({ status: "success" });
   });
 });
