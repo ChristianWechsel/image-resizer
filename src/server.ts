@@ -16,8 +16,8 @@ export function createServer() {
     res.status(200).json({ status: "ok" });
   });
 
-  // curl -X POST -d @Test.png localhost:8080/resize
-  // curl -X POST -H "Content-Type: image/png" --data-binary @Test.png localhost:8080/resize
+  // curl -X POST -d @Test.png localhost:8080/resize --output resized.png
+  // curl -X POST -H "Content-Type: image/png" --data-binary @Test.png localhost:8080/resize --output resized.png
   app.post("/resize", async (req, res) => {
     const resizeOptions: ResizeOptions = getResizeOptions(req);
 
