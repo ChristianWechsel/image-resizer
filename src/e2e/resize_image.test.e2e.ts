@@ -35,8 +35,13 @@ describe("Resize Image E2E Tests", () => {
     });
   });
 
-  it("should resize an image successfully", async () => {
+  it("root endpoint should return status ok", async () => {
     const response = await get(`http://localhost:${PORT}/`);
+    expect(response).toEqual({ status: "ok" });
+  });
+
+  it("health check endpoint should return status ok", async () => {
+    const response = await get(`http://localhost:${PORT}/health`);
     expect(response).toEqual({ status: "ok" });
   });
 });
