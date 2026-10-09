@@ -1,3 +1,4 @@
+import type { RequestLogger } from "@christian-wechsel/logger-middleware";
 import type { Request } from "express";
 import express from "express";
 import { pipeline } from "node:stream";
@@ -9,8 +10,14 @@ type ResizeOptions = Partial<{
   fit: keyof FitEnum;
 }>;
 
-export function createServer() {
+export function createServer({
+  requestLogger,
+}: {
+  requestLogger: ReturnType<RequestLogger["createRequestLogger"]>;
+}) {
   const app = express();
+
+  app.use(requestLogger);
 
   app.get(["/", "/health"], (_req, res) => {
     res.status(200).json({ status: "ok" });

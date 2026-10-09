@@ -5,7 +5,11 @@ import { get, post } from "./utils/test-client.js";
 
 describe("Resize Image E2E Tests", () => {
   const PORT = 3000;
-  const app = createServer();
+  const app = createServer({
+    requestLogger: (_req, _res, next) => {
+      next();
+    },
+  });
   let server: Server;
   let testImageBuffer: Uint8Array<ArrayBuffer>;
 
