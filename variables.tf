@@ -42,3 +42,8 @@ variable "connection_name_gcp_github" {
   type        = string
   description = "Name of the connection from github to gcp (manually created beforhand)"
 }
+
+variable "storage_bucket_name" {
+  type       = string
+  description = "GCP Storage Bucket name"
+}

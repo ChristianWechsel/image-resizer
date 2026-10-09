@@ -9,6 +9,8 @@ export function createEnv() {
     K_SERVICE: string;
     K_REVISION: string;
     K_CONFIGURATION: string;
+    PROJECT_ID: string;
+    STORAGE_BUCKET_NAME: string;
   }>({
     NODE_ENV: {
       defaultValue: "production",
@@ -23,5 +25,7 @@ export function createEnv() {
     K_SERVICE: HandleEnv.string(),
     K_REVISION: HandleEnv.string(),
     K_CONFIGURATION: HandleEnv.string(),
+    PROJECT_ID: HandleEnv.string(),
+    STORAGE_BUCKET_NAME: HandleEnv.string(),
   });
 }

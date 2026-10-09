@@ -6,8 +6,9 @@
         geleitet werden kann
 - [] Ersatz für NGINX 
     - Was ist Aufgabe von NGINX verstehen
-- [] Server sauber herunterfahren
+- [x] Server sauber herunterfahren
 - [] Logging auf Cloud Storage ablegen
+- [] create-gcp-ts aktualisieren
 
 ## Anleitung zum Einrichten
 

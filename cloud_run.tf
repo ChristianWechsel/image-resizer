@@ -16,6 +16,14 @@ resource "google_cloud_run_v2_service" "resizer_service" {
         name  = "NODE_ENV"
         value = "production"
       }
+      env {
+        name  = "PROJECT_ID"
+        value = var.project_id
+      }
+      env {
+        name  = "STORAGE_BUCKET_NAME"
+        value = var.storage_bucket_name
+      }
     }
 
     scaling {
