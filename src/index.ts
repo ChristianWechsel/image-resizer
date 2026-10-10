@@ -1,34 +1,37 @@
-import type { IncomingMessage, Server, ServerResponse } from "node:http";
 import { wireObjects } from "./core/container.js";
 import { createServer } from "./server.js";
 
-let objects: ReturnType<typeof wireObjects>;
-let server: Server<typeof IncomingMessage, typeof ServerResponse>;
 let count = 0;
+let isHealthy = false;
 
-objects = wireObjects();
+const { env, logger, requestLogger } = wireObjects((healthy) => {
+  isHealthy = healthy;
+  if (!healthy) {
+    process.exitCode = 1;
+    gracefulShutdown("LOGGER_ERROR");
+  }
+});
 
 const app = createServer({
-  requestLogger: objects.requestLogger.createRequestLogger(),
+  requestLogger: requestLogger.createRequestLogger(),
+  getIsHealthy: () => isHealthy,
 });
-const port = objects.env.getValue("PORT");
-objects.logger.info(`NODE_ENV: ${objects.env.getValue("NODE_ENV")}`);
-objects.logger.info(`K_SERVICE: ${objects.env.getValue("K_SERVICE")}`);
-objects.logger.info(`K_REVISION: ${objects.env.getValue("K_REVISION")}`);
-objects.logger.info(
-  `K_CONFIGURATION: ${objects.env.getValue("K_CONFIGURATION")}`,
-);
-objects.logger.info(`PROJECT_ID: ${objects.env.getValue("PROJECT_ID")}`);
-objects.logger.info(
-  `STORAGE_BUCKET_NAME: ${objects.env.getValue("STORAGE_BUCKET_NAME")}`,
-);
+const port = env.getValue("PORT");
+logger.info(`NODE_ENV: ${env.getValue("NODE_ENV")}`);
+logger.info(`K_SERVICE: ${env.getValue("K_SERVICE")}`);
+logger.info(`K_REVISION: ${env.getValue("K_REVISION")}`);
+logger.info(`K_CONFIGURATION: ${env.getValue("K_CONFIGURATION")}`);
+logger.info(`PROJECT_ID: ${env.getValue("PROJECT_ID")}`);
+logger.info(`STORAGE_BUCKET_NAME: ${env.getValue("STORAGE_BUCKET_NAME")}`);
 
-server = app.listen(port, () => {
-  objects.logger.info(`Server listening on port ${port}`);
+const server = app.listen(port, () => {
+  logger.info(`Server listening on port ${port}`);
+  isHealthy = true;
 });
 
 server.on("error", (err) => {
-  objects.logger.error(`Server error: ${err}`);
+  logger.error(`Server error: ${err}`);
+  isHealthy = false;
   process.exitCode = 1;
   gracefulShutdown("ERROR");
 });
@@ -38,23 +41,24 @@ process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 
 function gracefulShutdown(signal: string) {
   if (count === 0) {
-    objects.logger.info(`Received ${signal}, shutting down gracefully`);
+    logger.info(`Received ${signal}, shutting down gracefully`);
 
-    new Promise<void>((resolve) => {
+    new Promise<void>((resolveOuter) => {
       if (server.listening) {
-        new Promise<void>((resolve) =>
-          server.on("close", () => {
-            objects.logger.info("Server closed");
-            resolve();
-          }),
-        );
+        server.on("close", () => {
+          logger.info("Server closed");
+          isHealthy = false;
+          resolveOuter();
+        });
         server.close();
+      } else {
+        resolveOuter();
       }
-      resolve();
     })
       .then(() => {
-        objects.logger.info("Shutting down logger");
-        return objects.logger.close();
+        logger.info("Shutting down logger");
+        isHealthy = false;
+        return logger.close();
       })
       .then(() => {})
       .catch(() => {

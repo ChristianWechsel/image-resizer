@@ -12,16 +12,25 @@ type ResizeOptions = Partial<{
 
 export function createServer({
   requestLogger,
+  getIsHealthy,
 }: {
   requestLogger: ReturnType<RequestLogger["createRequestLogger"]>;
+  getIsHealthy: () => boolean;
 }) {
   const app = express();
 
-  app.use(requestLogger);
-
-  app.get(["/", "/health"], (_req, res) => {
-    res.status(200).json({ status: "ok" });
+  // don't log health check requests
+  app.get(["/health"], (_req, res) => {
+    const isHealty = getIsHealthy();
+    if (isHealty) {
+      res.status(200);
+    } else {
+      res.status(503);
+    }
+    res.end();
   });
+
+  app.use(requestLogger);
 
   // curl -X POST -d @Test.png localhost:8080/resize --output resized.png
   // curl -X POST -H "Content-Type: image/png" --data-binary @Test.png localhost:8080/resize --output resized.png

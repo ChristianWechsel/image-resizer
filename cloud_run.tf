@@ -11,6 +11,22 @@ resource "google_cloud_run_v2_service" "resizer_service" {
           cpu = "1"
         }
       }
+      startup_probe {
+        initial_delay_seconds = 1
+        http_get = {
+          path = "/health"
+        }
+      }
+      liveness_probe {
+        http_get = {
+          path = "/health"
+        }
+      }
+      readiness_probe {
+        http_get = {
+          path = "/health"
+        }
+      }
 
       env {
         name  = "NODE_ENV"
