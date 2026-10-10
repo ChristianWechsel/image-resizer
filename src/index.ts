@@ -4,7 +4,7 @@ import { createServer } from "./server.js";
 let count = 0;
 let isHealthy = false;
 
-const { env, logger, requestLogger } = wireObjects((healthy) => {
+const { env, logger, requestLogger } = await wireObjects((healthy) => {
   isHealthy = healthy;
   if (!healthy) {
     process.exitCode = 1;
