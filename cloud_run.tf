@@ -13,17 +13,17 @@ resource "google_cloud_run_v2_service" "resizer_service" {
       }
       startup_probe {
         initial_delay_seconds = 1
-        http_get = {
+        http_get {
           path = "/health"
         }
       }
       liveness_probe {
-        http_get = {
+        http_get {
           path = "/health"
         }
       }
       readiness_probe {
-        http_get = {
+        http_get {
           path = "/health"
         }
       }
