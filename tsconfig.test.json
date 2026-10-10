@@ -9,6 +9,7 @@
         "declarationMap": false
     },
     "exclude": [
+        "dist",
         "node_modules"
     ]
 }
