@@ -45,7 +45,7 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
-    "@christian-wechsel/logger": "^0.3.0",
+    "@christian-wechsel/logger": "^0.4.0",
     "@christian-wechsel/logger-middleware": "^0.1.2",
     "@christian-wechsel/typed-env-handler": "^1.0.13",
     "@google-cloud/storage": "^8.4.0",
