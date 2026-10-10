@@ -7,7 +7,7 @@ import { RequestLogger } from "@christian-wechsel/logger-middleware";
 import { createEnv } from "./env.js";
 import { CloudStorage } from "./storage.js";
 
-export async function wireObjects(setIsHealty: (isHealthy: boolean) => void) {
+export function wireObjects(setIsHealty: (isHealthy: boolean) => void) {
   const env = createEnv();
   const appName = env.getValue("K_SERVICE");
 

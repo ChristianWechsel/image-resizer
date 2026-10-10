@@ -1,13 +1,16 @@
 import { readFileSync } from "fs";
 import type { Server } from "http";
 import { createServer } from "../server.js";
-import { get, post } from "./utils/test-client.js";
+import { post } from "./utils/test-client.js";
 
 describe("Resize Image E2E Tests", () => {
   const PORT = 3000;
   const app = createServer({
     requestLogger: (_req, _res, next) => {
       next();
+    },
+    getIsHealthy() {
+      return true;
     },
   });
   let server: Server;
@@ -43,14 +46,15 @@ describe("Resize Image E2E Tests", () => {
     });
   });
 
-  it("root endpoint should return status ok", async () => {
-    const response = await get(`http://localhost:${PORT}/`);
-    expect(response).toEqual({ status: "ok" });
+  it("root endpoint should return not found", async () => {
+    const response = await fetch(`http://localhost:${PORT}/`);
+    expect(response.status).toBe(404);
   });
 
-  it("health check endpoint should return status ok", async () => {
-    const response = await get(`http://localhost:${PORT}/health`);
-    expect(response).toEqual({ status: "ok" });
+  it("health check endpoint should return success when healthy", async () => {
+    const response = await fetch(`http://localhost:${PORT}/health`);
+    expect(response.status).toBe(200);
+    expect(await response.text()).toBe("");
   });
 
   it("resize endpoint with default width 200", async () => {
