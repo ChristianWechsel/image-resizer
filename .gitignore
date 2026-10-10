@@ -5,5 +5,4 @@
 terraform*
 !terraform.tfvars.example
 ReadMe.md
-Test.png
 .env
