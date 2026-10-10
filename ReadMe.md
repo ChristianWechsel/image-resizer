@@ -25,4 +25,8 @@ gcloud run services list
 # <SERVICE> und <REGION> aus gcloud run services list ablesen
 gcloud run services describe <SERVICE> --region <REGION>
 
+# Deployment
+terraform output
+
+# Deployment Befehl ablesen und ausführen
 ```
