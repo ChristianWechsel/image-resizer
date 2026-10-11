@@ -16,7 +16,6 @@ export function wireObjects() {
   const storage = new CloudStorage({
     appName,
     bucketName: env.getValue("STORAGE_BUCKET_NAME"),
-    health,
     projectId: env.getValue("PROJECT_ID"),
   });
 
@@ -32,6 +31,8 @@ export function wireObjects() {
     env.getValue("NODE_ENV") === "production"
       ? storageLoggerInstance
       : new ConsoleLogger(appName);
+
+  storage.addLogger(logger);
   const requestLogger = new RequestLogger(logger);
 
   return { env, storage, logger, requestLogger, health };

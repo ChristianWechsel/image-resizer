@@ -21,8 +21,8 @@ export function createServer({
   const app = express();
 
   // don't log health check requests
-  app.get(["/health"], (_req, res) => {
-    if (health.getStatus() === "ok") {
+  app.get(["/health"], async (_req, res) => {
+    if ((await health.getStatus()) === "ok") {
       res.status(200);
     } else {
       res.status(503);

@@ -1,47 +1,49 @@
-import type { IStorage, LogEntry } from "@christian-wechsel/logger";
+import type { IStorage, LogEntry, Logger } from "@christian-wechsel/logger";
 import { Bucket, Storage } from "@google-cloud/storage";
 import { EOL } from "os";
-import type { Health } from "./health.js";
 
 export class CloudStorage implements IStorage {
   private storage: Storage;
   private bucket: Bucket;
+  private logger?: Logger;
 
   constructor(
     private params: {
       projectId: string;
       bucketName: string;
       appName: string;
-      health: Health;
     },
   ) {
     this.storage = new Storage({ projectId: this.params.projectId });
     this.bucket = this.storage.bucket(this.params.bucketName);
   }
 
+  async upload(data: LogEntry[]): Promise<void> {
+    return this.bucket
+      .file(this.getFileName())
+      .save(this.transformLogs(data))
+      .then(() => {
+        this.logger?.info(`Successfully uploaded log entries`);
+      })
+      .catch((err) => {
+        this.logger?.error(`Error uploading log entries: ${err}`);
+      });
+  }
+
+  addLogger(logger: Logger) {
+    this.logger = logger;
+  }
+
   checkConnection() {
     return this.bucket
       .exists()
       .then((exists) => {
-        this.params.health.addLog(`Bucket exists: ${JSON.stringify(exists)}`);
+        const isBucketExists = exists[0];
+        this.logger?.info(`Bucket existence: ${isBucketExists}`);
+        return isBucketExists;
       })
       .catch((err) => {
-        this.params.health.addLog(
-          `Error checking bucket existence: ${err}`,
-        );
-      });
-  }
-
-  async upload(data: LogEntry[]): Promise<void> {
-    await this.checkConnection();
-    return this.bucket
-      .file(this.getFileName())
-      .save(this.transformLogs(data))
-      .then((err) => {
-        this.params.health.addLog(`Successfully uploaded log entries: ${err}`);
-      })
-      .catch((err) => {
-        this.params.health.addLog(`Error uploading log entries: ${err}`);
+        this.logger?.error(`Error checking bucket existence: ${err}`);
       });
   }
 
