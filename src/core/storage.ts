@@ -27,7 +27,7 @@ export class CloudStorage implements IStorage {
       })
       .catch((err) => {
         this.params.health.addLog(
-          `Error checking buccurl -X POST -d @Test.png localhost:8080/resize --output resized.pngket existence: ${err}`,
+          `Error checking bucket existence: ${err}`,
         );
       });
   }
