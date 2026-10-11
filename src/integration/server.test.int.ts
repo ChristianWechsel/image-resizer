@@ -1,14 +1,15 @@
 import type { Server } from "node:http";
+import { Health } from "../core/health.js";
 import { createServer } from "../server.js";
 
 describe("Health check integration", () => {
   let server: Server;
   let baseUrl: string;
-  let isHealthy: boolean;
+  let health: Health;
   let requestLoggerCalls: number;
 
   beforeAll(async () => {
-    isHealthy = true;
+    health = new Health();
     requestLoggerCalls = 0;
 
     const app = createServer({
@@ -16,7 +17,7 @@ describe("Health check integration", () => {
         requestLoggerCalls++;
         next();
       },
-      getIsHealthy: () => isHealthy,
+      health,
     });
 
     await new Promise<void>((resolve, reject) => {
@@ -42,15 +43,24 @@ describe("Health check integration", () => {
 
   beforeEach(() => {
     requestLoggerCalls = 0;
+    health.setStatus("ok");
   });
 
-  it("returns 503 when unhealthy without invoking the request logger", async () => {
-    isHealthy = false;
+  it("returns 200 with status body when healthy without invoking the request logger", async () => {
+    const response = await fetch(`${baseUrl}/health`);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ status: "ok", log: [] });
+    expect(requestLoggerCalls).toBe(0);
+  });
+
+  it("returns 503 with status body when unhealthy without invoking the request logger", async () => {
+    health.setStatus("not-ok");
 
     const response = await fetch(`${baseUrl}/health`);
 
     expect(response.status).toBe(503);
-    expect(await response.text()).toBe("");
+    expect(await response.json()).toEqual({ status: "not-ok", log: [] });
     expect(requestLoggerCalls).toBe(0);
   });
 });

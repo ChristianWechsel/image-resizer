@@ -1,5 +1,6 @@
 import { readFileSync } from "fs";
 import type { Server } from "http";
+import { Health } from "../core/health.js";
 import { createServer } from "../server.js";
 import { post } from "./utils/test-client.js";
 
@@ -9,9 +10,7 @@ describe("Resize Image E2E Tests", () => {
     requestLogger: (_req, _res, next) => {
       next();
     },
-    getIsHealthy() {
-      return true;
-    },
+    health: new Health(),
   });
   let server: Server;
   let testImageBuffer: Uint8Array<ArrayBuffer>;
@@ -54,7 +53,7 @@ describe("Resize Image E2E Tests", () => {
   it("health check endpoint should return success when healthy", async () => {
     const response = await fetch(`http://localhost:${PORT}/health`);
     expect(response.status).toBe(200);
-    expect(await response.text()).toBe("");
+    expect(await response.json()).toEqual({ status: "ok", log: [] });
   });
 
   it("resize endpoint with default width 200", async () => {
