@@ -5,11 +5,13 @@ import {
 } from "@christian-wechsel/logger";
 import { RequestLogger } from "@christian-wechsel/logger-middleware";
 import { createEnv } from "./env.js";
+import { Health } from "./health.js";
 import { CloudStorage } from "./storage.js";
 
-export function wireObjects(setIsHealty: (isHealthy: boolean) => void) {
+export function wireObjects() {
   const env = createEnv();
   const appName = env.getValue("K_SERVICE");
+  const health = new Health();
 
   const storage = new CloudStorage(
     env.getValue("PROJECT_ID"),
@@ -18,8 +20,9 @@ export function wireObjects(setIsHealty: (isHealthy: boolean) => void) {
   );
 
   const storageLoggerInstance = new StorageLogger(appName, storage);
-  storageLoggerInstance.onError(() => {
-    setIsHealty(false);
+  storageLoggerInstance.onError((err) => {
+    health.setStatus("not-ok");
+    health.addLog(`${err}`);
   });
 
   const logger: Logger =
@@ -28,5 +31,5 @@ export function wireObjects(setIsHealty: (isHealthy: boolean) => void) {
       : new ConsoleLogger(appName);
   const requestLogger = new RequestLogger(logger);
 
-  return { env, storage, logger, requestLogger };
+  return { env, storage, logger, requestLogger, health };
 }

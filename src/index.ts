@@ -2,19 +2,18 @@ import { wireObjects } from "./core/container.js";
 import { createServer } from "./server.js";
 
 let count = 0;
-let isHealthy = false;
+const { env, logger, requestLogger, health } = wireObjects();
 
-const { env, logger, requestLogger } = wireObjects((healthy) => {
-  isHealthy = healthy;
-  if (!healthy) {
+health.onStatusChange((status) => {
+  if (status !== "ok") {
     process.exitCode = 1;
-    gracefulShutdown("LOGGER_ERROR");
+    gracefulShutdown("HEALTH_NOT_OK");
   }
 });
 
 const app = createServer({
   requestLogger: requestLogger.createRequestLogger(),
-  getIsHealthy: () => isHealthy,
+  health,
 });
 const port = env.getValue("PORT");
 logger.info(`NODE_ENV: ${env.getValue("NODE_ENV")}`);
@@ -26,12 +25,12 @@ logger.info(`STORAGE_BUCKET_NAME: ${env.getValue("STORAGE_BUCKET_NAME")}`);
 
 const server = app.listen(port, () => {
   logger.info(`Server listening on port ${port}`);
-  isHealthy = true;
+  health.setStatus("ok");
 });
 
 server.on("error", (err) => {
   logger.error(`Server error: ${err}`);
-  isHealthy = false;
+  health.setStatus("not-ok");
   process.exitCode = 1;
   gracefulShutdown("ERROR");
 });
@@ -47,7 +46,7 @@ function gracefulShutdown(signal: string) {
       if (server.listening) {
         server.on("close", () => {
           logger.info("Server closed");
-          isHealthy = false;
+          health.setStatus("not-ok");
           resolveOuter();
         });
         server.close();
@@ -57,7 +56,7 @@ function gracefulShutdown(signal: string) {
     })
       .then(() => {
         logger.info("Shutting down logger");
-        isHealthy = false;
+        health.setStatus("not-ok");
         return logger.close();
       })
       .then(() => {})

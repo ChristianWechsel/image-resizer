@@ -3,6 +3,7 @@ import type { Request } from "express";
 import express from "express";
 import { pipeline } from "node:stream";
 import sharp, { type FitEnum } from "sharp";
+import type { Health } from "./core/health.js";
 
 type ResizeOptions = Partial<{
   width: number;
@@ -12,22 +13,21 @@ type ResizeOptions = Partial<{
 
 export function createServer({
   requestLogger,
-  getIsHealthy,
+  health,
 }: {
   requestLogger: ReturnType<RequestLogger["createRequestLogger"]>;
-  getIsHealthy: () => boolean;
+  health: Health;
 }) {
   const app = express();
 
   // don't log health check requests
   app.get(["/health"], (_req, res) => {
-    const isHealty = getIsHealthy();
-    if (isHealty) {
+    if (health.getStatus() === "ok") {
       res.status(200);
     } else {
       res.status(503);
     }
-    res.end();
+    res.json({ status: health.getStatus(), log: health.getLog() });
   });
 
   app.use(requestLogger);
