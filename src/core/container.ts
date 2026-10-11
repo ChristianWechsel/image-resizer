@@ -13,13 +13,16 @@ export function wireObjects() {
   const appName = env.getValue("K_SERVICE");
   const health = new Health();
 
-  const storage = new CloudStorage(
-    env.getValue("PROJECT_ID"),
-    env.getValue("STORAGE_BUCKET_NAME"),
+  const storage = new CloudStorage({
     appName,
-  );
+    bucketName: env.getValue("STORAGE_BUCKET_NAME"),
+    health,
+    projectId: env.getValue("PROJECT_ID"),
+  });
 
-  const storageLoggerInstance = new StorageLogger(appName, storage);
+  const storageLoggerInstance = new StorageLogger(appName, storage, {
+    batch: { threshold: 2 },
+  });
   storageLoggerInstance.onError((err) => {
     health.setStatus("not-ok");
     health.addLog(`${err}`);
