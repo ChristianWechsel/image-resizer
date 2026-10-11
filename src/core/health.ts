@@ -3,7 +3,6 @@ type HealthStatus = "ok" | "not-ok";
 type HealthCheck = () => Promise<boolean>;
 
 export class Health {
-  private previousStatus: HealthStatus;
   private status: HealthStatus;
   private log: string[];
   private statusChangeCallback?: (status: HealthStatus) => void;
@@ -11,7 +10,6 @@ export class Health {
 
   constructor() {
     this.status = "ok";
-    this.previousStatus = "ok";
     this.log = [];
     this.checks = [];
   }
@@ -25,11 +23,11 @@ export class Health {
   }
 
   setStatus(status: HealthStatus): void {
-    if (this.previousStatus !== status && this.statusChangeCallback) {
-      this.statusChangeCallback(status);
-    }
-    this.previousStatus = this.status;
+    const hasChanged = this.status !== status;
     this.status = status;
+    if (hasChanged) {
+      this.statusChangeCallback?.(status);
+    }
   }
 
   addLog(entry: string): void {

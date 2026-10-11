@@ -1,7 +1,7 @@
 import type { RequestLogger } from "@christian-wechsel/logger-middleware";
 import type { Request } from "express";
 import express from "express";
-import { pipeline } from "node:stream";
+import { pipeline } from "node:stream/promises";
 import sharp, { type FitEnum } from "sharp";
 import type { Health } from "./core/health.js";
 
@@ -22,12 +22,9 @@ export function createServer({
 
   // don't log health check requests
   app.get(["/health"], async (_req, res) => {
-    if ((await health.getStatus()) === "ok") {
-      res.status(200);
-    } else {
-      res.status(503);
-    }
-    res.json({ status: health.getStatus(), log: health.getLog() });
+    const status = await health.getStatus();
+    res.status(status === "ok" ? 200 : 503);
+    res.json({ status, log: health.getLog() });
   });
 
   app.use(requestLogger);
@@ -38,11 +35,7 @@ export function createServer({
     const resizeOptions: ResizeOptions = getResizeOptions(req);
 
     res.type("image/png");
-    await pipeline(req, sharp().resize(resizeOptions).png(), res, (err) => {
-      if (err) {
-        res.status(500).json({ status: "error", message: err.message });
-      }
-    });
+    await pipeline(req, sharp().resize(resizeOptions).png(), res);
   });
 
   return app;
