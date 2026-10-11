@@ -1,48 +1,20 @@
 import { readFileSync } from "fs";
-import type { Server } from "http";
-import { Health } from "../core/health.js";
-import { createServer } from "../server.js";
 import { post } from "./utils/test-client.js";
+import { TestServer } from "./utils/test-server.js";
 
 describe("Resize Image E2E Tests", () => {
-  const PORT = 3000;
-  const app = createServer({
-    requestLogger: (_req, _res, next) => {
-      next();
-    },
-    health: new Health(),
-  });
-  let server: Server;
+  const PORT = TestServer.getNextPort();
+  const testServer = new TestServer({ port: PORT });
+
   let testImageBuffer: Uint8Array<ArrayBuffer>;
 
   beforeAll(async () => {
     testImageBuffer = new Uint8Array(readFileSync("Test.png"));
-
-    await new Promise<void>((resolve, reject) => {
-      server = app.listen(PORT);
-      server.once("listening", () => {
-        console.log(`Server is listening on port ${PORT}`);
-        resolve();
-      });
-      server.once("error", (err) => {
-        console.error(err);
-        reject(err);
-      });
-    });
+    await testServer.start();
   });
 
   afterAll(async () => {
-    await new Promise<void>((resolve, reject) => {
-      server.once("close", () => {
-        console.log(`Server on port ${PORT} has been closed.`);
-        resolve();
-      });
-      server.once("error", (err) => {
-        console.error(err);
-        reject(err);
-      });
-      server.close();
-    });
+    await testServer.stop();
   });
 
   it("root endpoint should return not found", async () => {
