@@ -48,6 +48,8 @@
       "runtimeArgs": [
         "--inspect",
         "${workspaceFolder}/node_modules/jest/bin/jest.js",
+        "--testPathPatterns",
+        "${fileBasenameNoExtension}",
         "--runInBand",
         "--selectProjects",
         "E2E"

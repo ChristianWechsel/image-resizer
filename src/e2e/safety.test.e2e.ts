@@ -14,11 +14,6 @@ describe("API Key", () => {
     await testServer.stop();
   });
 
-  it("Endpoint health: no API Key", async () => {
-    const response = await fetch(`http://localhost:${PORT}/health`);
-    expect(response.status).toBe(401);
-  });
-
   it("Endpoint resize: no API Key", async () => {
     const response = await fetch(`http://localhost:${PORT}/resize`, {
       method: "POST",
@@ -26,6 +21,8 @@ describe("API Key", () => {
       body: testImage.getBuffer(),
     });
     expect(response.status).toBe(401);
+    expect(await response.text()).toBe("Unauthorized");
+    expect(response.headers.get("WWW-Authenticate")).toBe("Bearer");
   });
 
   it.todo("no API Key at all");

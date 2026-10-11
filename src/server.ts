@@ -4,6 +4,7 @@ import express from "express";
 import { pipeline } from "node:stream/promises";
 import sharp, { type FitEnum } from "sharp";
 import type { Health } from "./core/health.js";
+import { getApiKeyMiddleware } from "./middleware/api-key.js";
 
 type ResizeOptions = Partial<{
   width: number;
@@ -27,6 +28,7 @@ export function createServer({
     res.json({ status, log: health.getLog() });
   });
 
+  app.use(getApiKeyMiddleware("123"));
   app.use(requestLogger);
 
   // curl -X POST -d @Test.png localhost:8080/resize --output resized.png

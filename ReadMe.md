@@ -98,10 +98,46 @@ Ziel: kein Fort Knox, nur Schutz vor Missbrauch der eigenen Ressourcen und Koste
 - [] API Key (oder IAM)
 - [] Größen- und Pixel-Limits
 - [] Fehlerbehandlung
+- [] `/health` ohne `health.getLog()` ausliefern (nur Status), da der Log interne Fehlertexte öffentlich preisgibt
 - [] `express-rate-limit` als grobe Bremse
 - [] Timeouts und Header
 
 Cloud Armor und Redis weglassen.
+
+## API Key als Zugriffsschutz
+
+Header: `Authorization: Bearer <key>` (RFC 6750, bereits in `src/middleware/api-key.ts`).
+
+Bedrohungsmodell: Wer sich als mein Google-Konto anmelden kann, kann das Secret lesen und hat ohnehin vollen GCP-Zugriff. Dagegen hilft nur Kontoschutz (2FA). Der API Key schützt vor Dritten ohne Konto-Zugriff und vor unbeabsichtigter Weitergabe des Clients.
+
+Entscheidung offen: IAM-Invoker + ID-Token statt API Key. Gleicher Schutz ohne eigenen Server-Code, Token kurzlebig, Identität im Request-Log. Nicht kombinierbar mit `Authorization: Bearer <key>`, da Cloud Run den Header dann selbst prüft (bei Kombination anderen Header wie `X-Api-Key` wählen).
+
+### Server
+
+- [] Middleware vor `/resize` einbinden (vor Body und `sharp`), `/health` ausnehmen
+- [] `API_KEY` über `src/core/env.ts` einlesen statt `process.env`; fehlt der Key, Bereitschaft nicht melden (fail closed)
+- [] `Authorization`-Header im Request-Logger maskieren (häufigster Leak)
+- [] Immer dieselbe 401-Antwort, egal ob Header fehlt oder Key falsch ist
+- [] Rotation: während des Wechsels alten und neuen Key akzeptieren
+- [] Unit-Tests für die Middleware (fehlender Header, falsches Schema, falscher Key, richtiger Key, Schema in anderer Schreibweise)
+- [] Optional: `timingSafeEqual` ohne Hash, dafür mit Längenprüfung (`a.length === b.length`)
+
+### Secret Manager und Terraform
+
+- [] Key erzeugen: `openssl rand -base64 32` bzw. `randomBytes(32).toString('base64url')`
+- [] Secret in Secret Manager anlegen (Terraform), Wert nicht in Git und nicht im Terraform-State ablegen
+- [] Cloud-Run-Service-Account: `roles/secretmanager.secretAccessor` nur auf dieses Secret
+- [] Nutzer/Client-Identität: `roles/secretmanager.secretAccessor` nur auf dieses Secret, nicht projektweit
+- [] Secret in Cloud Run einbinden: Env-Variable (wird beim Instanzstart aufgelöst, Rotation braucht neue Revision) oder Volume (aktuelle Version beim Lesen)
+- [] Data-Access-Audit-Logs für Secret Manager aktivieren (standardmäßig aus)
+- [] 2FA auf dem Google-Konto prüfen
+
+### CLI Client
+
+- [] Secret zur Laufzeit per Application Default Credentials aus Secret Manager holen
+- [] Key nur im Speicher halten: nicht in Datei, Shell-History, Kommandozeilenargument oder Cache
+- [] Key nie in der URL/Query übergeben
+- [] Fehlerausgabe ohne Key und ohne Header-Dump
 
 ## Anleitung zum Einrichten
 
