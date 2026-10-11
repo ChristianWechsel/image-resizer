@@ -20,7 +20,7 @@ export function wireObjects() {
   });
 
   const storageLoggerInstance = new StorageLogger(appName, storage, {
-    batch: { threshold: 2 },
+    batch: { threshold: 1000 },
   });
   storageLoggerInstance.onError((err) => {
     health.setStatus("not-ok");
