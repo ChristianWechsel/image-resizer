@@ -28,7 +28,7 @@ export function createServer({
   app.get(["/health"], async (_req, res) => {
     const status = await health.getStatus();
     res.status(status === "ok" ? 200 : 503);
-    res.json({ status, log: health.getLog() });
+    res.json({ status });
   });
 
   // curl -X POST -d @Test.png localhost:8080/resize --output resized.png

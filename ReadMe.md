@@ -96,9 +96,9 @@ Ziel: kein Fort Knox, nur Schutz vor Missbrauch der eigenen Ressourcen und Koste
 
 - [x] Budget-Alert
 - [x] API Key (oder IAM)
-- [] Größen- und Pixel-Limits
+- [x] Größen- und Pixel-Limits
 - [] Fehlerbehandlung
-- [] `/health` ohne `health.getLog()` ausliefern (nur Status), da der Log interne Fehlertexte öffentlich preisgibt
+- [x] `/health` ohne `health.getLog()` ausliefern (nur Status), da der Log interne Fehlertexte öffentlich preisgibt
 - [] `express-rate-limit` als grobe Bremse
 - [] Timeouts und Header
 
