@@ -95,7 +95,7 @@ Ziel: kein Fort Knox, nur Schutz vor Missbrauch der eigenen Ressourcen und Koste
 ### Empfohlene Reihenfolge
 
 - [x] Budget-Alert
-- [] API Key (oder IAM)
+- [x] API Key (oder IAM)
 - [] Größen- und Pixel-Limits
 - [] Fehlerbehandlung
 - [] `/health` ohne `health.getLog()` ausliefern (nur Status), da der Log interne Fehlertexte öffentlich preisgibt

@@ -7,27 +7,37 @@ type LogEntries = {
 };
 
 export class TestServer {
-  private static port = 3000;
-
-  public static getNextPort() {
-    return this.port++;
-  }
-
   private app: ReturnType<typeof createServer>;
   private server?: Server;
 
-  constructor(private params: { port: number; apiKey: string }) {
+  constructor(
+    private params: {
+      apiKey: string;
+      requestLogger?: Parameters<typeof createServer>[0]["requestLogger"];
+    },
+  ) {
     this.app = createServer({
-      requestLogger: (_req, _res, next) => {
-        next();
-      },
+      requestLogger:
+        this.params.requestLogger ??
+        ((_req, _res, next) => {
+          next();
+        }),
       health: new Health(),
       apiKey: this.params.apiKey,
     });
   }
+  get baseUrl(): string {
+    const address = this.server?.address();
+    if (!address || typeof address === "string") {
+      throw new Error("Server is not running");
+    }
+    return `http://localhost:${address.port}`;
+  }
+
   start(): Promise<LogEntries> {
     return new Promise<LogEntries>((resolve, reject) => {
-      this.server = this.app.listen(this.params.port);
+      // Port 0: the OS picks a free port, so parallel test files cannot collide
+      this.server = this.app.listen(0);
       this.server.once("listening", () => {
         resolve({ logs: ["Server started successfully"] });
       });

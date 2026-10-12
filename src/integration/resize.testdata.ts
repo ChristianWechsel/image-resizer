@@ -5,8 +5,6 @@ export type ResizeTestdata = {
   expectedHeight: number;
 };
 
-export const sourceImageSize = { width: 400, height: 300 };
-
 export class ResizeTestdataFactory {
   default_width(): ResizeTestdata {
     return {

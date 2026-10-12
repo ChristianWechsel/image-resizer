@@ -30,20 +30,22 @@ export function createServer({
     res.json({ status, log: health.getLog() });
   });
 
-  app.use(getApiKeyMiddleware(apiKey));
-  app.use(requestLogger);
-
   // curl -X POST -d @Test.png localhost:8080/resize --output resized.png
   // curl -X POST -H "Content-Type: image/png" --data-binary @Test.png localhost:8080/resize --output resized.png
   // Test ob API Key funktioniert
   // curl -i -X POST -H "Content-Type: image/png" --data-binary @Test.png localhost:8080/resize
   // curl -i -X POST -H "Content-Type: image/png" -H "Authorization: Bearer your-api-key" --data-binary @Test.png localhost:8080/resize
-  app.post("/resize", async (req, res) => {
-    const resizeOptions: ResizeOptions = getResizeOptions(req);
+  app.post(
+    "/resize",
+    getApiKeyMiddleware(apiKey),
+    requestLogger,
+    async (req, res) => {
+      const resizeOptions: ResizeOptions = getResizeOptions(req);
 
-    res.type("image/png");
-    await pipeline(req, sharp().resize(resizeOptions).png(), res);
-  });
+      res.type("image/png");
+      await pipeline(req, sharp().resize(resizeOptions).png(), res);
+    },
+  );
 
   return app;
 }

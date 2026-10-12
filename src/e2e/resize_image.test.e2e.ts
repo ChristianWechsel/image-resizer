@@ -4,8 +4,7 @@ import { TestImage } from "./utils/test-image.js";
 import { TestServer } from "./utils/test-server.js";
 
 describe("Resize Image E2E Tests", () => {
-  const PORT = TestServer.getNextPort();
-  const testServer = new TestServer({ port: PORT, apiKey });
+  const testServer = new TestServer({ apiKey });
   const testImage = TestImage.getInstance();
 
   beforeAll(async () => {
@@ -17,18 +16,18 @@ describe("Resize Image E2E Tests", () => {
   });
 
   it("root endpoint should return not found", async () => {
-    const response = await fetch(`http://localhost:${PORT}/`);
+    const response = await fetch(`${testServer.baseUrl}/`);
     expect(response.status).toBe(404);
   });
 
   it("health check endpoint should return success when healthy", async () => {
-    const response = await fetch(`http://localhost:${PORT}/health`);
+    const response = await fetch(`${testServer.baseUrl}/health`);
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ status: "ok", log: [] });
   });
 
   it("resize endpoint with default width 200", async () => {
-    const response = await post(`http://localhost:${PORT}/resize`, {
+    const response = await post(`${testServer.baseUrl}/resize`, {
       headers: {
         "Content-Type": "image/png",
         Authorization: `Bearer ${apiKey}`,
@@ -40,7 +39,7 @@ describe("Resize Image E2E Tests", () => {
 
   it("resize endpoint with custom size", async () => {
     const response = await post(
-      `http://localhost:${PORT}/resize?width=384&height=256`,
+      `${testServer.baseUrl}/resize?width=384&height=256`,
       {
         headers: {
           "Content-Type": "image/png",

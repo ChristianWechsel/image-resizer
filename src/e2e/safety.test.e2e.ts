@@ -3,8 +3,7 @@ import { TestImage } from "./utils/test-image.js";
 import { TestServer } from "./utils/test-server.js";
 
 describe("API Key", () => {
-  const PORT = TestServer.getNextPort();
-  const testServer = new TestServer({ port: PORT, apiKey });
+  const testServer = new TestServer({ apiKey });
   const testImage = TestImage.getInstance();
 
   beforeAll(async () => {
@@ -16,7 +15,7 @@ describe("API Key", () => {
   });
 
   it("Endpoint resize: no API Key", async () => {
-    const response = await fetch(`http://localhost:${PORT}/resize`, {
+    const response = await fetch(`${testServer.baseUrl}/resize`, {
       method: "POST",
       headers: { "Content-Type": "image/png" },
       body: testImage.getBuffer(),
@@ -27,7 +26,7 @@ describe("API Key", () => {
   });
 
   it("Endpoint resize: invalid API Key", async () => {
-    const response = await fetch(`http://localhost:${PORT}/resize`, {
+    const response = await fetch(`${testServer.baseUrl}/resize`, {
       method: "POST",
       headers: {
         "Content-Type": "image/png",

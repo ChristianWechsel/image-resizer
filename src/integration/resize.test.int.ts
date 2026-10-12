@@ -1,60 +1,29 @@
-import type { Server } from "node:http";
 import sharp from "sharp";
-import { Health } from "../core/health.js";
 import { apiKey } from "../e2e/utils/test-api-key.js";
-import { createServer } from "../server.js";
+import { TestImage } from "../e2e/utils/test-image.js";
+import { TestServer } from "../e2e/utils/test-server.js";
 import {
   ResizeTestdataFactory,
-  sourceImageSize,
   type ResizeTestdata,
 } from "./resize.testdata.js";
 
 describe("Resize endpoint integration", () => {
-  let server: Server;
-  let baseUrl: string;
-  let requestLoggerCalls: number;
-  let sourceImage: Uint8Array<ArrayBuffer>;
+  let requestLoggerCalls = 0;
+  const testServer = new TestServer({
+    apiKey,
+    requestLogger: (_request, _response, next) => {
+      requestLoggerCalls++;
+      next();
+    },
+  });
+  const sourceImage = TestImage.getInstance().getBuffer();
 
   beforeAll(async () => {
-    const pngBuffer = await sharp({
-      create: {
-        ...sourceImageSize,
-        channels: 3,
-        background: { r: 200, g: 50, b: 50 },
-      },
-    })
-      .png()
-      .toBuffer();
-    sourceImage = new Uint8Array(pngBuffer);
-
-    const app = createServer({
-      requestLogger: (_request, _response, next) => {
-        requestLoggerCalls++;
-        next();
-      },
-      health: new Health(),
-      apiKey,
-    });
-
-    await new Promise<void>((resolve, reject) => {
-      server = app.listen(0, () => resolve());
-      server.once("error", reject);
-    });
-
-    const address = server.address();
-    if (address === null || typeof address === "string") {
-      throw new Error("Expected the test server to listen on a TCP port");
-    }
-    baseUrl = `http://127.0.0.1:${address.port}`;
+    await testServer.start();
   });
 
   afterAll(async () => {
-    await new Promise<void>((resolve, reject) => {
-      server.close((error) => {
-        if (error) reject(error);
-        else resolve();
-      });
-    });
+    await testServer.stop();
   });
 
   beforeEach(() => {
@@ -62,9 +31,12 @@ describe("Resize endpoint integration", () => {
   });
 
   function postImage(query: string, body: Uint8Array<ArrayBuffer>) {
-    return fetch(`${baseUrl}/resize${query}`, {
+    return fetch(`${testServer.baseUrl}/resize${query}`, {
       method: "POST",
-      headers: { "Content-Type": "image/png" },
+      headers: {
+        "Content-Type": "image/png",
+        Authorization: `Bearer ${apiKey}`,
+      },
       body,
     });
   }
