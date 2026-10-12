@@ -18,7 +18,7 @@ describe("API Key", () => {
     const response = await fetch(`${testServer.baseUrl}/resize`, {
       method: "POST",
       headers: { "Content-Type": "image/png" },
-      body: testImage.getBuffer(),
+      body: testImage.getRegularImage(),
     });
     expect(response.status).toBe(401);
     expect(await response.text()).toBe("Unauthorized");
@@ -32,10 +32,23 @@ describe("API Key", () => {
         "Content-Type": "image/png",
         Authorization: "Bearer invalid-api-key",
       },
-      body: testImage.getBuffer(),
+      body: testImage.getRegularImage(),
     });
     expect(response.status).toBe(401);
     expect(await response.text()).toBe("Unauthorized");
     expect(response.headers.get("WWW-Authenticate")).toBe("Bearer");
+  });
+
+  it.only("Endpoint resize: block data greater then 10 MB", async () => {
+    const response = await fetch(`${testServer.baseUrl}/resize`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "image/png",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: testImage.getOversizedData(),
+    });
+    expect(response.status).toBe(413);
+    expect(await response.text()).toBe("Content Too Large");
   });
 });

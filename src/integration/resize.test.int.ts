@@ -16,7 +16,7 @@ describe("Resize endpoint integration", () => {
       next();
     },
   });
-  const sourceImage = TestImage.getInstance().getBuffer();
+  const sourceImage = TestImage.getInstance().getRegularImage();
 
   beforeAll(async () => {
     await testServer.start();

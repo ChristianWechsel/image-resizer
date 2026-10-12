@@ -32,7 +32,7 @@ describe("Resize Image E2E Tests", () => {
         "Content-Type": "image/png",
         Authorization: `Bearer ${apiKey}`,
       },
-      body: testImage.getBuffer(),
+      body: testImage.getRegularImage(),
     });
     expect(response).toHaveLength(66056);
   });
@@ -45,7 +45,7 @@ describe("Resize Image E2E Tests", () => {
           "Content-Type": "image/png",
           Authorization: `Bearer ${apiKey}`,
         },
-        body: testImage.getBuffer(),
+        body: testImage.getRegularImage(),
       },
     );
     expect(response).toHaveLength(190664);

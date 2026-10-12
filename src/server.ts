@@ -5,6 +5,7 @@ import { pipeline } from "node:stream/promises";
 import sharp, { type FitEnum } from "sharp";
 import type { Health } from "./core/health.js";
 import { getApiKeyMiddleware } from "./middleware/api-key.js";
+import { contentSizeLimit } from "./middleware/content-size.js";
 
 type ResizeOptions = Partial<{
   width: number;
@@ -37,6 +38,7 @@ export function createServer({
   // curl -i -X POST -H "Content-Type: image/png" -H "Authorization: Bearer your-api-key" --data-binary @Test.png localhost:8080/resize
   app.post(
     "/resize",
+    contentSizeLimit(),
     getApiKeyMiddleware(apiKey),
     requestLogger,
     async (req, res) => {
