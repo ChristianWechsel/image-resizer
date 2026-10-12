@@ -1,5 +1,6 @@
 import type { Server } from "node:http";
 import { Health } from "../core/health.js";
+import { apiKey } from "../e2e/utils/test-api-key.js";
 import { createServer } from "../server.js";
 
 describe("Health check integration", () => {
@@ -18,6 +19,7 @@ describe("Health check integration", () => {
         next();
       },
       health,
+      apiKey,
     });
 
     await new Promise<void>((resolve, reject) => {

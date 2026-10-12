@@ -14,6 +14,7 @@ health.onStatusChange((status) => {
 const app = createServer({
   requestLogger: requestLogger.createRequestLogger(),
   health,
+  apiKey: env.getValue("API_KEY"),
 });
 const port = env.getValue("PORT");
 logger.info(`NODE_ENV: ${env.getValue("NODE_ENV")}`);

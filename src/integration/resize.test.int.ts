@@ -1,6 +1,7 @@
 import type { Server } from "node:http";
 import sharp from "sharp";
 import { Health } from "../core/health.js";
+import { apiKey } from "../e2e/utils/test-api-key.js";
 import { createServer } from "../server.js";
 import {
   ResizeTestdataFactory,
@@ -32,6 +33,7 @@ describe("Resize endpoint integration", () => {
         next();
       },
       health: new Health(),
+      apiKey,
     });
 
     await new Promise<void>((resolve, reject) => {

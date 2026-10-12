@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { createHash, timingSafeEqual } from "node:crypto";
 
+// openssl rand -base64 32 zum Erzeugen eines APi Keys
 export function getApiKeyMiddleware(expectedKey: string) {
   return function apiKeyMiddleware(
     req: Request,

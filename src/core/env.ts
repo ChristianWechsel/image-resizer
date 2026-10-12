@@ -11,6 +11,7 @@ export function createEnv() {
     K_CONFIGURATION: string;
     PROJECT_ID: string;
     STORAGE_BUCKET_NAME: string;
+    API_KEY: string;
   }>({
     NODE_ENV: {
       defaultValue: "production",
@@ -27,5 +28,15 @@ export function createEnv() {
     K_CONFIGURATION: HandleEnv.string(),
     PROJECT_ID: HandleEnv.string(),
     STORAGE_BUCKET_NAME: HandleEnv.string(),
+    API_KEY: {
+      secret: true,
+      conversion(value) {
+        return value.trim();
+      },
+      validation(value) {
+        // 32 Zufallsbytes als base64 (`openssl rand -base64 32`) oder base64url
+        return /^[A-Za-z0-9+/_-]{43}=?$/.test(value);
+      },
+    },
   });
 }

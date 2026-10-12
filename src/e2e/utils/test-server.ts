@@ -16,12 +16,13 @@ export class TestServer {
   private app: ReturnType<typeof createServer>;
   private server?: Server;
 
-  constructor(private params: { port: number }) {
+  constructor(private params: { port: number; apiKey: string }) {
     this.app = createServer({
       requestLogger: (_req, _res, next) => {
         next();
       },
       health: new Health(),
+      apiKey: this.params.apiKey,
     });
   }
   start(): Promise<LogEntries> {

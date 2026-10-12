@@ -15,9 +15,11 @@ type ResizeOptions = Partial<{
 export function createServer({
   requestLogger,
   health,
+  apiKey,
 }: {
   requestLogger: ReturnType<RequestLogger["createRequestLogger"]>;
   health: Health;
+  apiKey: string;
 }) {
   const app = express();
 
@@ -28,11 +30,14 @@ export function createServer({
     res.json({ status, log: health.getLog() });
   });
 
-  app.use(getApiKeyMiddleware("123"));
+  app.use(getApiKeyMiddleware(apiKey));
   app.use(requestLogger);
 
   // curl -X POST -d @Test.png localhost:8080/resize --output resized.png
   // curl -X POST -H "Content-Type: image/png" --data-binary @Test.png localhost:8080/resize --output resized.png
+  // Test ob API Key funktioniert
+  // curl -i -X POST -H "Content-Type: image/png" --data-binary @Test.png localhost:8080/resize
+  // curl -i -X POST -H "Content-Type: image/png" -H "Authorization: Bearer your-api-key" --data-binary @Test.png localhost:8080/resize
   app.post("/resize", async (req, res) => {
     const resizeOptions: ResizeOptions = getResizeOptions(req);
 

@@ -1,10 +1,11 @@
+import { apiKey } from "./utils/test-api-key.js";
 import { post } from "./utils/test-client.js";
 import { TestImage } from "./utils/test-image.js";
 import { TestServer } from "./utils/test-server.js";
 
 describe("Resize Image E2E Tests", () => {
   const PORT = TestServer.getNextPort();
-  const testServer = new TestServer({ port: PORT });
+  const testServer = new TestServer({ port: PORT, apiKey });
   const testImage = TestImage.getInstance();
 
   beforeAll(async () => {
@@ -28,7 +29,10 @@ describe("Resize Image E2E Tests", () => {
 
   it("resize endpoint with default width 200", async () => {
     const response = await post(`http://localhost:${PORT}/resize`, {
-      headers: { "Content-Type": "image/png" },
+      headers: {
+        "Content-Type": "image/png",
+        Authorization: `Bearer ${apiKey}`,
+      },
       body: testImage.getBuffer(),
     });
     expect(response).toHaveLength(66056);
@@ -38,7 +42,10 @@ describe("Resize Image E2E Tests", () => {
     const response = await post(
       `http://localhost:${PORT}/resize?width=384&height=256`,
       {
-        headers: { "Content-Type": "image/png" },
+        headers: {
+          "Content-Type": "image/png",
+          Authorization: `Bearer ${apiKey}`,
+        },
         body: testImage.getBuffer(),
       },
     );
