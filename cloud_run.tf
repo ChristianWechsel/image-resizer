@@ -45,7 +45,7 @@ resource "google_cloud_run_v2_service" "resizer_service" {
         value_source  {
           secret_key_ref {
             secret = var.secret_name 
-            version = latest
+            version = "latest"
           }
         }
       }
@@ -63,4 +63,6 @@ resource "google_cloud_run_v2_service" "resizer_service" {
       client_version
     ]
   }
+
+  depends_on = [google_secret_manager_secret_iam_member.resizer_runner_secret_access]
 }

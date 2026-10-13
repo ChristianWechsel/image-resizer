@@ -23,7 +23,7 @@ describe("Resize Image E2E Tests", () => {
   it("health check endpoint should return success when healthy", async () => {
     const response = await fetch(`${testServer.baseUrl}/health`);
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ status: "ok", log: [] });
+    expect(await response.json()).toEqual({ status: "ok" });
   });
 
   it("resize endpoint with default width 200", async () => {

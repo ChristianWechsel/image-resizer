@@ -52,7 +52,7 @@ describe("Health check integration", () => {
     const response = await fetch(`${baseUrl}/health`);
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ status: "ok", log: [] });
+    expect(await response.json()).toEqual({ status: "ok" });
     expect(requestLoggerCalls).toBe(0);
   });
 
@@ -62,7 +62,7 @@ describe("Health check integration", () => {
     const response = await fetch(`${baseUrl}/health`);
 
     expect(response.status).toBe(503);
-    expect(await response.json()).toEqual({ status: "not-ok", log: [] });
+    expect(await response.json()).toEqual({ status: "not-ok" });
     expect(requestLoggerCalls).toBe(0);
   });
 });
