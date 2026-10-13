@@ -23,6 +23,7 @@ export function createServer({
   apiKey: string;
 }) {
   const app = express();
+  app.disable("x-powered-by");
 
   // don't log health check requests
   app.get(["/health"], async (_req, res) => {
