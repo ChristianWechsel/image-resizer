@@ -154,4 +154,17 @@ gcloud run services describe <SERVICE> --region <REGION>
 terraform output
 
 # Deployment Befehl ablesen und ausführen
+
+# API Key erzeugen
+openssl rand -base64 32
+
+# Secret anlegen
+gcloud secrets create ${var.secret_name} --project=${var.project_id}
+
+# Wert zu Secret hinzufügen
+openssl rand -base64 32 | gcloud secrets versions add ${var.secret_name} --data-file=- --project=${var.project_id}
+
+
+gcloud secrets list
+gcloud secrets versions list ${var.secret_name}
 ```

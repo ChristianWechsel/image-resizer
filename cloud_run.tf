@@ -40,6 +40,15 @@ resource "google_cloud_run_v2_service" "resizer_service" {
         name  = "STORAGE_BUCKET_NAME"
         value = var.storage_bucket_name
       }
+      env {
+        name  = "API_KEY"
+        value_source  {
+          secret_key_ref {
+            secret = var.secret_name 
+            version = latest
+          }
+        }
+      }
     }
 
     scaling {

@@ -47,3 +47,8 @@ variable "storage_bucket_name" {
   type       = string
   description = "GCP Storage Bucket name"
 }
+
+variable "secret_name" {
+  type       = string
+  description = "Name of secret storing API-Key"
+}
