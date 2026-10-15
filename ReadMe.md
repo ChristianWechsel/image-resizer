@@ -1,7 +1,5 @@
 # ReadMe
 
-- [] create-gcp-ts aktualisieren
-
 ## Anleitung zum Einrichten
 
 ```Shell
