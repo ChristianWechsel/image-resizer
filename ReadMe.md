@@ -32,5 +32,4 @@ echo $BASE_URL
 export OUTPUT=output.png
 export INPUT=input.png
 curl --show-error -X POST -H "Content-Type: image/png" -H "Authorization: Bearer ${API_KEY}" --data-binary @${INPUT} --output "${OUTPUT}" ${BASE_URL%/}/resize
-
 ```

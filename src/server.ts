@@ -2,7 +2,7 @@ import type { RequestLogger } from "@christian-wechsel/logger-middleware";
 import type { Request } from "express";
 import express from "express";
 import { pipeline } from "node:stream/promises";
-import sharp, { type FitEnum } from "sharp";
+import sharp, { type FitEnum, type Sharp } from "sharp";
 import type { Health } from "./core/health.js";
 import { getApiKeyMiddleware } from "./middleware/api-key.js";
 import { contentSizeLimit } from "./middleware/content-size.js";
@@ -11,6 +11,7 @@ type ResizeOptions = Partial<{
   width: number;
   height: number;
   fit: keyof FitEnum;
+  format: "png" | "jpeg";
 }>;
 
 export function createServer({
@@ -45,8 +46,8 @@ export function createServer({
     async (req, res) => {
       const resizeOptions: ResizeOptions = getResizeOptions(req);
 
-      res.type("image/png");
-      await pipeline(req, sharp().resize(resizeOptions).png(), res);
+      res.type(`image/${resizeOptions.format}`);
+      await pipeline(req, factoryResize(resizeOptions), res);
     },
   );
 
@@ -56,8 +57,10 @@ export function createServer({
 function getResizeOptions(req: Request): ResizeOptions {
   const queryParamWidth = req.query.width;
   const queryParamHeight = req.query.height;
+  const queryParamFormat = req.query.format;
   const resizeOptions: ResizeOptions = {
     width: 200,
+    format: "png",
   };
 
   let widthProvided = false;
@@ -71,13 +74,32 @@ function getResizeOptions(req: Request): ResizeOptions {
     resizeOptions.height = parseInt(queryParamHeight);
     heightProvided = true;
   }
-
   if (widthProvided && heightProvided) {
     resizeOptions.fit = "fill";
+  }
+  if (isFormat(queryParamFormat)) {
+    resizeOptions.format = queryParamFormat;
   }
   return resizeOptions;
 }
 
 function isString(value: unknown): value is string {
   return typeof value === "string";
+}
+
+function isFormat(value: unknown): value is "png" | "jpeg" {
+  if (!isString(value)) {
+    return false;
+  }
+  return value === "png" || value === "jpeg";
+}
+
+function factoryResize(options: ResizeOptions): Sharp {
+  let transformer = sharp().resize(options);
+  if (options.format === "png") {
+    transformer = transformer.png();
+  } else if (options.format === "jpeg") {
+    transformer = transformer.jpeg();
+  }
+  return transformer;
 }

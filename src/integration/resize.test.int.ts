@@ -47,18 +47,29 @@ describe("Resize endpoint integration", () => {
     testData.custom_width(),
     testData.width_and_height(),
     testData.height_only(),
-  ])("$name", async ({ query, expectedWidth, expectedHeight }) => {
-    const response = await postImage(query, sourceImage);
-    const metadata = await sharp(
-      Buffer.from(await response.arrayBuffer()),
-    ).metadata();
+    testData.request_jpeg(),
+    testData.request_png(),
+  ])(
+    "$name",
+    async ({
+      query,
+      expectedWidth,
+      expectedHeight,
+      expectedFormat,
+      expectedContentType,
+    }) => {
+      const response = await postImage(query, sourceImage);
+      const metadata = await sharp(
+        Buffer.from(await response.arrayBuffer()),
+      ).metadata();
 
-    expect(response.status).toBe(200);
-    expect(response.headers.get("content-type")).toBe("image/png");
-    expect(metadata.format).toBe("png");
-    expect(metadata.width).toBe(expectedWidth);
-    expect(metadata.height).toBe(expectedHeight);
-  });
+      expect(response.status).toBe(200);
+      expect(response.headers.get("content-type")).toBe(expectedContentType);
+      expect(metadata.format).toBe(expectedFormat);
+      expect(metadata.width).toBe(expectedWidth);
+      expect(metadata.height).toBe(expectedHeight);
+    },
+  );
 
   it("invokes the request logger for resize requests", async () => {
     await postImage("", sourceImage);
