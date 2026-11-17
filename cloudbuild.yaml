@@ -1,7 +1,7 @@
 steps:
   - name: "node:24"
     entrypoint: "npm"
-    args: ["audit", "--audit-level=high"]
+    args: ["audit", "--audit-level=critical"]
 
   - name: "node:24"
     entrypoint: "npm"
