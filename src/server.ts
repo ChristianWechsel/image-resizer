@@ -11,7 +11,7 @@ type ResizeOptions = Partial<{
   width: number;
   height: number;
   fit: keyof FitEnum;
-  format: "png" | "jpeg";
+  format: "png" | "jpeg" | "webp" | "avif";
 }>;
 
 export function createServer({
@@ -91,15 +91,28 @@ function isFormat(value: unknown): value is "png" | "jpeg" {
   if (!isString(value)) {
     return false;
   }
-  return value === "png" || value === "jpeg";
+  return (
+    value === "png" || value === "jpeg" || value === "webp" || value === "avif"
+  );
 }
 
 function factoryResize(options: ResizeOptions): Sharp {
   let transformer = sharp().resize(options);
-  if (options.format === "png") {
-    transformer = transformer.png();
-  } else if (options.format === "jpeg") {
-    transformer = transformer.jpeg();
+  switch (options.format) {
+    case "png":
+      transformer = transformer.png();
+      break;
+    case "jpeg":
+      transformer = transformer.jpeg();
+      break;
+    case "webp":
+      transformer = transformer.webp();
+      break;
+    case "avif":
+      transformer = transformer.avif();
+      break;
+    default:
+      break;
   }
   return transformer;
 }

@@ -49,6 +49,8 @@ describe("Resize endpoint integration", () => {
     testData.height_only(),
     testData.request_jpeg(),
     testData.request_png(),
+    testData.request_webp(),
+    testData.request_avif(),
   ])(
     "$name",
     async ({

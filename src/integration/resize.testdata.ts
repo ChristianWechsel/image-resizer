@@ -3,8 +3,8 @@ export type ResizeTestdata = {
   query: string;
   expectedWidth: number;
   expectedHeight: number;
-  expectedFormat: "png" | "jpeg";
-  expectedContentType: "image/png" | "image/jpeg";
+  expectedFormat: "png" | "jpeg" | "webp" | "heif";
+  expectedContentType: "image/png" | "image/jpeg" | "image/webp" | "image/avif";
 };
 
 export class ResizeTestdataFactory {
@@ -71,6 +71,28 @@ export class ResizeTestdataFactory {
       expectedHeight: 150,
       expectedFormat: "png",
       expectedContentType: "image/png",
+    };
+  }
+
+  request_webp(): ResizeTestdata {
+    return {
+      name: "request WebP",
+      query: "?format=webp",
+      expectedWidth: 200,
+      expectedHeight: 150,
+      expectedFormat: "webp",
+      expectedContentType: "image/webp",
+    };
+  }
+
+  request_avif(): ResizeTestdata {
+    return {
+      name: "request AVIF",
+      query: "?format=avif",
+      expectedWidth: 200,
+      expectedHeight: 150,
+      expectedFormat: "heif",
+      expectedContentType: "image/avif",
     };
   }
 }

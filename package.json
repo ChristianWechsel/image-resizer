@@ -1,7 +1,7 @@
 {
   "name": "@christian-wechsel/image-resizer",
-  "version": "0.12.0",
-  "description": "",
+  "version": "0.13.0",
+  "description": "HTTP API for resizing and converting images to PNG, JPEG, WebP, or AVIF.",
   "main": "dist/index.js",
   "scripts": {
     "test": "npm run build-test && jest",
@@ -24,7 +24,18 @@
     "type": "git",
     "url": "git+https://github.com/ChristianWechsel/image-resizer.git"
   },
-  "keywords": [],
+  "keywords": [
+    "image",
+    "image-resizer",
+    "resize",
+    "image-processing",
+    "image-conversion",
+    "sharp",
+    "png",
+    "jpeg",
+    "webp",
+    "avif"
+  ],
   "author": "Christian Wechsel <npm@christian-wechsel.com>",
   "license": "MIT",
   "type": "module",
